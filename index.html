@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Web Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-gray-800 p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold text-cyan-400">🤖 My AI Assistant</h1>
+        <span class="text-xs bg-cyan-900 text-cyan-300 px-2 py-1 rounded">Online</span>
+    </header>
+
+    <!-- Chat Box -->
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-3xl w-full mx-auto">
+        <!-- Welcome Message -->
+        <div class="flex items-start space-x-2">
+            <div class="bg-cyan-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">AI</div>
+            <div class="bg-gray-800 p-3 rounded-lg max-w-md text-sm shadow">
+                ආයුබෝවන්! මම ඔබේ AI සහායකයා. මගෙන් ඕනෑම ප්‍රශ්නයක් අසන්න.
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Form -->
+    <div class="bg-gray-800 p-4 shadow-lg">
+        <form id="chat-form" class="max-w-3xl mx-auto flex gap-2">
+            <input 
+                type="text" 
+                id="user-input" 
+                placeholder="පණිවිඩයක් මෙතන ටයිප් කරන්න..." 
+                class="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                required
+            >
+            <button 
+                type="submit" 
+                class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-medium transition"
+            >
+                යවන්න
+            </button>
+        </form>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+
+        chatForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // User Message Append
+            appendMessage(message, 'user');
+            userInput.value = '';
+
+            // Loading state
+            const loadingId = appendMessage('කරුණාකර රැඳී සිටින්න...', 'ai');
+
+            try {
+                // මෙතැනට ඔබට අවශ්‍ය API එක සම්බන්ධ කරගත හැක
+                // උදාහරණයක් ලෙස ඔබේ API එක Fetch කිරීම:
+                /*
+                const response = https://your-api-endpoint.com/v1;
+                const data = await response.json();
+                */
+
+                // තාවකාලික සිමියුලේෂන් පිළිතුරක්
+                setTimeout(() => {
+                    removeMessage(loadingId);
+                    appendMessage(`ඔබ ඇසූ ප්‍රශ්නයට පිළිතුර: "${message}" (මෙය පරීක්ෂා කිරීම සඳහා සාදන ලද ආදර්ශන ප්‍රතිචාරයකි.)`, 'ai');
+                }, 1000);
+
+            } catch (error) {
+                removeMessage(loadingId);
+                appendMessage('දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න.', 'ai');
+            }
+        });
+
+        function appendMessage(text, sender) {
+            const messageId = 'msg-' + Date.now();
+            const isUser = sender === 'user';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.id = messageId;
+            messageDiv.className = `flex items-start space-x-2 ${isUser ? 'justify-end' : ''}`;
+
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="bg-blue-600 p-3 rounded-lg max-w-md text-sm shadow">${text}</div>
+                    <div class="bg-blue-800 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">මම</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="bg-cyan-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">AI</div>
+                    <div class="bg-gray-800 p-3 rounded-lg max-w-md text-sm shadow">${text}</div>
+                `;
+            }
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return messageId;
+        }
+
+        function removeMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+    </script>
+</body>
+</html>
+
